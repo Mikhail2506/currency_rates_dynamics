@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ошибка</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .error-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .error-message {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 error-container">
+      <h1 class="text-center">Ошибка</h1>
+      <div class="error-message" th:text="${error}"></div>
+      <a href="/api/currency/" class="btn btn-primary mt-3">Вернуться на главную</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

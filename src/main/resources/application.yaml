@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: currencies
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+server:
+  port: 8080
+
+currency:
+  api:
+    url: https://api.nbrb.by
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Rate Dynamics</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 800px; /* Ограничиваем максимальную ширину графика */
+      margin: 0 auto; /* Центрируем контейнер */
+    }
+    canvas {
+      width: 100% !important; /* Делаем график адаптивным */
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <h1 class="text-center">Динамика изменений курса</h1>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  const ratesString = /*[[${rates}]]*/ '[]'; // Получаем данные от сервера
+  let rates;
+  try {
+    rates = JSON.parse(ratesString); // Преобразуем строку в массив
+  } catch (error) {
+    console.error('Ошибка при парсинге данных:', error);
+    rates = []; // Устанавливаем пустой массив в случае ошибки
+  }
+
+  console.log(rates);
+  console.log(Array.isArray(rates));
+
+  if (rates && rates.length > 0) {
+    const labels = rates.map(item => item.Date.split('T')[0]); // Извлекаем даты
+    const values = rates.map(item => item.Cur_OfficialRate); // Извлекаем курсы
+
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Официальный курс',
+          data: values,
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0, 0, 255, 0.1)',
+          borderWidth: 2,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true, // График адаптируется под размер экрана
+        maintainAspectRatio: false, // Отключаем фиксированное соотношение сторон
+        scales: {
+          x: {
+            type: 'time', // Используем временную шкалу для оси X
+            time: {
+              unit: 'day' // Единица измерения (день)
+            },
+            title: {
+              display: true,
+              text: 'Дата'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Курс'
+            }
+          }
+        }
+      }
+    });
+  } else {
+    alert('Данные отсутствуют или неверны.');
+  }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Rate</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      display: none; /* Скрываем сообщение по умолчанию */
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 form-container">
+      <h1 class="text-center">Валюты</h1>
+
+      <form id="currencyForm" action="/api/currency/rates" method="post">
+        <div class="form-group">
+          <label for="curId">Валюта:</label>
+          <select name="curId" id="curId" class="form-control" required>
+            <option th:each="currency : ${currencies}"
+                    th:value="${currency.id}"
+                    th:text="${currency.name}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="startDate">Начальная дата:</label>
+          <input type="date" name="startDate" id="startDate" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="endDate">Конечная дата:</label>
+          <input type="date" name="endDate" id="endDate" class="form-control" required>
+        </div>
+        <div id="errorMessage" class="error-message">
+          Ошибка: Начальная дата должна быть меньше или равна конечной дате.
+        </div>
+        <div id="futureDateError" class="error-message">
+          Ошибка: Выбранная дата еще не наступила.
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Получить график</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Обработчик отправки формы
+  document.getElementById('currencyForm').addEventListener('submit', function (event) {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const errorMessage = document.getElementById('errorMessage');
+    const futureDateError = document.getElementById('futureDateError');
+    const currentDate = new Date().toISOString().split('T')[0]; // Получаем текущую дату
+
+    // Отладка
+    console.log('Текущая дата:', currentDate);
+    console.log('Начальная дата:', startDate);
+    console.log('Конечная дата:', endDate);
+
+    // Сбрасываем сообщения об ошибках
+    errorMessage.style.display = 'none';
+    futureDateError.style.display = 'none';
+
+    // Проверяем корректность дат
+    if (startDate && endDate && startDate > endDate) {
+      console.log('Ошибка: Начальная дата больше конечной.');
+      event.preventDefault(); // Отменяем отправку формы
+      errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+    }
+
+    // Проверяем, что даты не в будущем
+    if (startDate > currentDate || endDate > currentDate) {
+      console.log('Ошибка: Выбранная дата в будущем.');
+      event.preventDefault(); // Отменяем отправку формы
+      futureDateError.style.display = 'block'; // Показываем сообщение об ошибке
+    }
+  });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
